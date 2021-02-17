@@ -28,6 +28,7 @@ func pickResult() string {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+	// JSONを作成
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	result := pickResult()
 	o := &Omikuji{Result: result}
@@ -35,8 +36,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	var buf bytes.Buffer
 	enc := json.NewEncoder(&buf)
 	if err := enc.Encode(o); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		http.Error(w, "処理中にエラーが発生しました。もう一度やり直してください", http.StatusInternalServerError)
 	}
+
+	// 書き込み
 	str := buf.String()
 	log.Println(str)
 	fmt.Fprintf(w, "%s", str)
