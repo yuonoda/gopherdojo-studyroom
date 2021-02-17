@@ -16,8 +16,8 @@ type Omikuji struct {
 	Result string `json:"result"`
 }
 
-func pickResult() string {
-	_, m, d := time.Now().Date()
+func pickResult(time time.Time) string {
+	_, m, d := time.Date()
 	var i int
 	if m == 1 && d > 0 && d < 4 {
 		i = len(results) - 1
@@ -30,9 +30,10 @@ func pickResult() string {
 func handler(w http.ResponseWriter, r *http.Request) {
 	// JSONを作成
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	result := pickResult()
+	result := pickResult(time.Now())
 	o := &Omikuji{Result: result}
 
+	// 書き込み
 	var buf bytes.Buffer
 	enc := json.NewEncoder(&buf)
 	if err := enc.Encode(o); err != nil {
