@@ -1,6 +1,7 @@
 package omikuji_test
 
 import (
+	"fmt"
 	omiikuji "github.com/yuonoda/gopherdojo-studyroom/kadai4/yuonoda/lib"
 	"net/http"
 	"net/http/httptest"
