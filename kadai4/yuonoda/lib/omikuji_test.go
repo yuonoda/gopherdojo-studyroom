@@ -26,32 +26,34 @@ func TestHandler(t *testing.T) {
 
 func TestPickResult(t *testing.T) {
 	cases := []struct {
-		name          string
-		time          time.Time
-		expectedRegex string
+		name        string
+		time        time.Time
+		resultRegex string
 	}{
 		{
-			"new_year",
-			time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC),
-			`大吉`,
+			"normal",
+			time.Date(2001, 2, 1, 0, 0, 0, 0, time.Local),
+			`(吉|中吉|大吉|凶)`,
 		},
 		{
-			"normal_day",
-			time.Now(),
-			`^凶$|^吉$|^中吉$|^大吉$`,
+			"new_year",
+			time.Date(2001, 1, 1, 0, 0, 0, 0, time.Local),
+			`(大吉)`,
 		},
 	}
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			res := omiikuji.ExpPickResult(c.time)
-			matched, err := regexp.MatchString(c.expectedRegex, res)
+			regex, err := regexp.Compile(c.resultRegex)
 			if err != nil {
-				t.Error(err)
-			} else if !matched {
-				t.Error(fmt.Errorf("result mismatch expected %s, got %s", c.expectedRegex, res))
+				t.Errorf("incorect resultRegex : %s", err)
 			}
-
+			result := omiikuji.ExpPickResult(c.time)
+			t.Logf("result:%s", result)
+			isMatch := regex.MatchString(result)
+			if !isMatch {
+				t.Errorf("result doesn't match regex, got %s expected %s", result, c.resultRegex)
+			}
 		})
 	}
 }
